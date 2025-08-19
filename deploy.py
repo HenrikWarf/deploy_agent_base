@@ -2,7 +2,7 @@
 import os
 import vertexai
 from dotenv import load_dotenv
-from vertexai.preview import agent_engines
+from vertexai import agent_engines
 from agent import agent
 
 # Load environment variables from .env file
