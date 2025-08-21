@@ -45,7 +45,7 @@ except Exception as e:
     exit(1)
 
 app = AdkApp(
-   agent='agent_instructions.root_agent',
+   agent='agent.root_agent',
    enable_tracing=True
 )
 logging.debug("deploying agent to agent engine:")
