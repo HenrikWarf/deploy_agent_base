@@ -44,7 +44,7 @@ The deployment script requires your Google Cloud project details. Copy the examp
 cp .env.example .env
 ```
 
-Now, open the `.env` file and replace the placeholder values with your actual Google Cloud `PROJECT_ID`, `LOCATION` (e.g., `us-central1`), a Cloud Storage `STAGING_BUCKET` URI (e.g., `gs://your-bucket-name`), and your `REASONING_ENGINE_ID`.
+Now, open the `.env` file and replace the placeholder values with your actual Google Cloud `PROJECT_ID`, `LOCATION` (e.g., `us-central1`), a Cloud Storage `STAGING_BUCKET` URI (e.g., `gs://your-bucket-name`), and your `REASONING_ENGINE_ID` (after deployment).
 
 ## How to Deploy
 
