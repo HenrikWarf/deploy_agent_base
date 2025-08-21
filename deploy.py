@@ -1,10 +1,14 @@
 
 import os
 import vertexai
+import logging
 from dotenv import load_dotenv
 from vertexai import agent_engines
-from agent import agent
+from vertexai.preview.reasoning_engines import AdkApp
 
+
+#---------------------------------------------
+# Environment Variables
 # Load environment variables from .env file
 load_dotenv()
 
@@ -17,25 +21,51 @@ STAGING_BUCKET = os.getenv("STAGING_BUCKET")
 if not all([PROJECT_ID, LOCATION, STAGING_BUCKET]):
     raise ValueError("Missing required environment variables. Please check your .env file.")
 
-print("Initializing Vertex AI...")
-# Initialize the Vertex AI SDK
-vertexai.init(
-    project=PROJECT_ID,
-    location=LOCATION,
-    staging_bucket=STAGING_BUCKET
+#-------------------------------------------
+# Logging
+
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+#-------------------------------------------
+# Deployment
+
+logging.info("Initializing Vertex AI...")
+try:
+    # Initialize the Vertex AI SDK
+    vertexai.init(
+        project=PROJECT_ID,
+        location=LOCATION,
+        staging_bucket=STAGING_BUCKET
+    )
+except Exception as e:
+    logging.error(f"Failed to initialize Vertex AI: {e}")
+    exit(1)
+
+app = AdkApp(
+   agent='agent_instructions.root_agent',
+   enable_tracing=True
 )
+logging.debug("deploying agent to agent engine:")
 
 # Deploy the agent to Vertex AI Agent Engine
-print("Deploying agent to Vertex AI Agent Engine...")
+logging.info("Deploying agent to Vertex AI Agent Engine...")
+
 try:
     remote_agent = agent_engines.create(
-        local_agent=agent,
+        agent_engine=app,
         display_name="My Weather Agent",
         description="An agent that provides weather information.",
-        requirements=[], # No third-party packages needed for this simple agent
+        requirements=["google-cloud-aiplatform[adk,agent_engines]",
+                      "google-adk", 
+                      "python-dotenv",
+                      "pydantic",
+                      "cloudpickle"]
     )
-    print(f"Agent deployed successfully!")
-    print(f"Resource Name: {remote_agent.resource_name}")
+    logging.info(f"Agent deployed successfully!")
+    logging.info(f"Resource Name: {remote_agent.resource_name}")
 except Exception as e:
-    print(f"An error occurred during deployment: {e}")
+    logging.error(f"An error occurred during deployment: {e}")
 

@@ -1,1 +1,7 @@
-google-cloud-aiplatform[agent_engines]
+google-cloud-aiplatform[adk,agent_engines]
+google-adk
+python-dotenv
+pydantic
+cloudpickle
+asyncio
+pytest
