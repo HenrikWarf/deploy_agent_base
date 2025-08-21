@@ -53,11 +53,18 @@ logging.debug("deploying agent to agent engine:")
 # Deploy the agent to Vertex AI Agent Engine
 logging.info("Deploying agent to Vertex AI Agent Engine...")
 
+#-------------------------------------------
+# Agent Configuration
+# TODO: Customize the display name and description of your agent
+AGENT_DISPLAY_NAME = "My Weather Agent"
+AGENT_DESCRIPTION = "An agent that provides weather information."
+#-------------------------------------------
+
 try:
     remote_agent = agent_engines.create(
         agent_engine=app,
-        display_name="My Weather Agent",
-        description="An agent that provides weather information.",
+        display_name=AGENT_DISPLAY_NAME,
+        description=AGENT_DESCRIPTION,
         requirements=["google-cloud-aiplatform[adk,agent_engines]",
                       "google-adk", 
                       "python-dotenv",

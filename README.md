@@ -1,6 +1,6 @@
-# ADK Agent Deployment to Vertex AI
+# ADK Agent Deployment to Vertex AI Template
 
-This project contains Python scripts to define and deploy a sample Agent Development Kit (ADK) agent to the Vertex AI Agent Engine.
+This project provides a generic template for defining and deploying a sample Agent Development Kit (ADK) agent to the Vertex AI Agent Engine.
 
 ## Project Structure
 
@@ -8,6 +8,7 @@ This project contains Python scripts to define and deploy a sample Agent Develop
 - `deploy.py`: The script that handles the deployment of the agent to Vertex AI.
 - `requirements.txt`: A list of the Python packages required for this project.
 - `.env.example`: An example file for configuring your environment variables.
+- `test_query.py`: A script to test the deployed agent.
 - `README.md`: This file.
 
 ## Setup Instructions
@@ -43,7 +44,7 @@ The deployment script requires your Google Cloud project details. Copy the examp
 cp .env.example .env
 ```
 
-Now, open the `.env` file and replace the placeholder values with your actual Google Cloud `PROJECT_ID`, `LOCATION` (e.g., `us-central1`), and a Cloud Storage `STAGING_BUCKET` URI (e.g., `gs://your-bucket-name`).
+Now, open the `.env` file and replace the placeholder values with your actual Google Cloud `PROJECT_ID`, `LOCATION` (e.g., `us-central1`), a Cloud Storage `STAGING_BUCKET` URI (e.g., `gs://your-bucket-name`), and your `REASONING_ENGINE_ID`.
 
 ## How to Deploy
 
@@ -54,3 +55,36 @@ python deploy.py
 ```
 
 This script will import the agent defined in `agent.py`, initialize Vertex AI, and deploy it. If the deployment is successful, it will print the resource name of your new agent, which you can use to interact with it via the Vertex AI API.
+
+## How to Test
+
+After deploying the agent, you can test it using the `test_query.py` script. Make sure you have set the `REASONING_ENGINE_ID` in your `.env` file. The `REASONING_ENGINE_ID` is the last part of the resource name that is printed after successful deployment (e.g., `5145635253154480128`).
+
+```bash
+python test_query.py
+```
+
+## Customizing the Agent
+
+You can customize the agent by modifying the `agent.py` file. 
+
+### Agent Definition
+
+The agent is defined in the `agent.py` file. You can change the agent's `name`, `model`, `description`, and `instruction`.
+
+### Tools
+
+The agent's tools are also defined in the `agent.py` file. You can add, remove, or modify the tools in the `tools` list.
+
+### Agent Configuration
+
+In the `deploy.py` file, you can customize the `display_name` and `description` of your agent by modifying the following variables:
+
+```python
+#-------------------------------------------
+# Agent Configuration
+# TODO: Customize the display name and description of your agent
+AGENT_DISPLAY_NAME = "My Weather Agent"
+AGENT_DESCRIPTION = "An agent that provides weather information."
+#-------------------------------------------
+```

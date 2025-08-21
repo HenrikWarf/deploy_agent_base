@@ -1,22 +1,30 @@
-from vertexai import agent_engines
+import os
 import uuid
 import asyncio
-import sys
+from dotenv import load_dotenv
+from vertexai import agent_engines
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Get environment variables
+PROJECT_ID = os.getenv("PROJECT_ID")
+LOCATION = os.getenv("LOCATION")
+REASONING_ENGINE_ID = os.getenv("REASONING_ENGINE_ID")
+
+# Validate that all required environment variables are set
+if not all([PROJECT_ID, LOCATION, REASONING_ENGINE_ID]):
+    raise ValueError("Missing required environment variables. Please set PROJECT_ID, LOCATION, and REASONING_ENGINE_ID in your .env file.")
 
 async def main():
   
-    agent = agent_engines.get("projects/ml-developer-project-fe07/locations/us-central1/reasoningEngines/5145635253154480128")
+    agent = agent_engines.get(f"projects/{PROJECT_ID}/locations/{LOCATION}/reasoningEngines/{REASONING_ENGINE_ID}")
     print(agent)
 
     user_id = str(uuid.uuid4())
-    #session_id = str(uuid.uuid4())
-    #print(f"Querying agent with session_id: {session_id}")
-    #session = await agent.async_create_session(user_id=session_id)
 
     async for event in agent.async_stream_query(
         user_id=user_id,
-    #    session_id=session,  # Optional
         message="What is the weather in New york?",
     ):
         try:
