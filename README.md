@@ -1,4 +1,4 @@
-# ADK Agent Template
+# ADK deployment to Agent Engine Template
 
 This project provides a template for creating and deploying a Vertex AI Agent using the Agent Development Kit (ADK).
 
