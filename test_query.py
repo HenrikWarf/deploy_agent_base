@@ -1,42 +1,60 @@
 import os
-import uuid
-import asyncio
 from dotenv import load_dotenv
+import logging
+import google.cloud.logging
+from google.cloud.logging.handlers import CloudLoggingHandler
+
+import vertexai
 from vertexai import agent_engines
 
-# Load environment variables from .env file
+# Load environment variables and initialize Vertex AI
 load_dotenv()
+project_id = os.environ["PROJECT_ID"]
+location = os.environ["LOCATION"]
+app_name = os.environ.get("APP_NAME")
+bucket_name = os.environ.get("STAGING_BUCKET")
+TEST_USER_ID = os.getenv("TEST_USER_ID")
+TEST_MESSAGE = os.getenv("TEST_MESSAGE")
 
-# Get environment variables
-PROJECT_ID = os.getenv("PROJECT_ID")
-LOCATION = os.getenv("LOCATION")
-REASONING_ENGINE_ID = os.getenv("REASONING_ENGINE_ID")
+# Initialize Google Cloud Logging with the correct project ID
+cloud_logging_client = google.cloud.logging.Client(project=project_id)
+handler = CloudLoggingHandler(cloud_logging_client, name="weather-app")
+logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().addHandler(handler)
 
-# Validate that all required environment variables are set
-if not all([PROJECT_ID, LOCATION, REASONING_ENGINE_ID]):
-    raise ValueError("Missing required environment variables. Please set PROJECT_ID, LOCATION, and REASONING_ENGINE_ID in your .env file.")
+# Initialize Vertex AI with the correct project and location
+vertexai.init(
+    project=project_id,
+    location=location,
+    staging_bucket=bucket_name,
+)
 
-async def main():
-  
-    agent = agent_engines.get(f"projects/{PROJECT_ID}/locations/{LOCATION}/reasoningEngines/{REASONING_ENGINE_ID}")
-    print(agent)
+# Filter agent engines by the app name in .env
+ae_apps = agent_engines.list(filter=f'display_name="{app_name}"')
 
-    user_id = str(uuid.uuid4())
+remote_app = next(ae_apps)
 
-    async for event in agent.async_stream_query(
-        user_id=user_id,
-        message="What is the weather in New york?",
-    ):
-        try:
-            print(event['content']['parts'][0]['text'])
-        except:
-            pass
+logging.info(f"Using remote app: {remote_app.display_name}")
 
-if __name__ == "__main__":
-    # Run the asynchronous main function
-    asyncio.run(main())
+# Get a session for the remote app
+remote_session = remote_app.create_session(user_id=TEST_USER_ID)
 
+# Run the agent with this hard-coded input
+events = remote_app.stream_query(
+    user_id=TEST_USER_ID,
+    session_id=remote_session["id"],
+    message=TEST_MESSAGE,
+)
 
+# Print responses
+for event in events:
+    for part in event["content"]["parts"]:
+        if "text" in part:
+            response_text = part["text"]
+            print("[remote response]", response_text)
+            logging.info("[remote response] " + response_text)
+
+handler.transport.flush()
 
 
 
