@@ -6,7 +6,7 @@ This project provides a template for creating and deploying a Vertex AI Agent us
 
 - `agent.py`: Contains the core logic for the agent, including its definition, tools, and deployment to Vertex AI.
 - `test_locally.py`: A script to test the agent locally.
-- `test_query.py`: A script to test the deployed agent on Vertex AI.
+- `test_remote.py`: A script to test the deployed agent on Vertex AI.
 - `requirements.txt`: A list of the Python packages required for this project.
 - `.env.example`: An example file for configuring your environment variables.
 - `README.md`: This file.
@@ -70,10 +70,10 @@ This will use the agent configuration from your `.env` file to run the agent in 
 
 ### Test the Deployed Agent
 
-After deploying the agent to Vertex AI, you can test it by running the `test_query.py` script:
+After deploying the agent to Vertex AI, you can test it by running the `test_remote.py` script:
 
 ```bash
-python test_query.py
+python test_remote.py
 ```
 
 This script will send a test message to your deployed agent and print the response.
